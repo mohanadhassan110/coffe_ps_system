@@ -280,15 +280,15 @@
                         <div class="row text-center">
                             <div class="col-4">
                                 <div style="font-size:1.4rem;font-weight:900;color:#4f46e5;">{{ $report['sessions_count'] }}</div>
-                                <div style="font-size:0.75rem;font-weight:700;color:#64748b;">جلسة PS</div>
+                                <div style="font-size:0.8rem;font-weight:800;color:#0f172a;">جلسة PS</div>
                             </div>
                             <div class="col-4">
-                                <div style="font-size:1.4rem;font-weight:900;color:#f59e0b;">{{ $report['cafe_orders_count'] ?? 0 }}</div>
-                                <div style="font-size:0.75rem;font-weight:700;color:#64748b;">طلب كافيه</div>
+                                <div style="font-size:1.4rem;font-weight:900;color:#d97706;">{{ $report['cafe_orders_count'] ?? 0 }}</div>
+                                <div style="font-size:0.8rem;font-weight:800;color:#0f172a;">طلب كافيه</div>
                             </div>
                             <div class="col-4">
                                 <div style="font-size:1.4rem;font-weight:900;color:#ef4444;">{{ $report['expenses']->count() }}</div>
-                                <div style="font-size:0.75rem;font-weight:700;color:#64748b;">مصروف</div>
+                                <div style="font-size:0.8rem;font-weight:800;color:#0f172a;">مصروف</div>
                             </div>
                         </div>
                     </div>
@@ -362,8 +362,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     Chart.defaults.font.family = 'Cairo';
-    Chart.defaults.font.weight = '600';
-    Chart.defaults.color = '#64748b';
+    Chart.defaults.font.weight = '700';
+    Chart.defaults.color = '#0f172a';
 
     const weeklyData = @json($weeklyTrend);
     const topProductsData = @json($topProducts);

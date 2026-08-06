@@ -18,7 +18,7 @@
                         <tr>
                             <td class="fw-bold text-slate-500">#{{ $cat->id }}</td>
                             <td><strong class="text-slate-900 fs-6">{{ $cat->name }}</strong></td>
-                            <td><span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200 fs-6">{{ $cat->products_count }} منتج</span></td>
+                            <td><span class="badge" style="background:#312e81;color:#ffffff;font-size:0.85rem;font-weight:800;padding:6px 12px;border-radius:12px;">{{ $cat->products_count }} منتج</span></td>
                             <td>
                                 <div class="d-flex gap-1">
                                     <a href="{{ route('categories.edit', $cat) }}" class="btn btn-outline-secondary btn-sm" title="تعديل"><i class="bi bi-pencil"></i></a>

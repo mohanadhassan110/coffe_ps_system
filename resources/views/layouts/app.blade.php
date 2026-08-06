@@ -32,8 +32,8 @@
             --card-hover: #f1f5f9;
             --darker: #f1f5f9;
             --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-muted: #64748b;
+            --text-secondary: #0f172a;
+            --text-muted: #1e293b;
             --border-color: #e2e8f0;
             --gradient-1: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
             --gradient-2: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
@@ -475,27 +475,27 @@
         .pos-category-btn {
             padding: 10px 20px;
             border-radius: 12px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 0.92rem;
-            border: 2px solid #cbd5e1;
+            border: 2px solid #64748b;
             background: #ffffff;
-            color: #334155;
+            color: #0f172a !important;
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
         }
 
         .pos-category-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: #f8fafc;
+            border-color: #4f46e5;
+            color: #4f46e5 !important;
+            background: #e0e7ff;
         }
 
         .pos-category-btn.active {
-            background: var(--gradient-1);
-            color: #ffffff;
-            border-color: transparent;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+            background: #4f46e5 !important;
+            color: #ffffff !important;
+            border-color: #312e81;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
         }
 
         /* الصفحة الفارغة */

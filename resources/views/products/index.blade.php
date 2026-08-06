@@ -28,7 +28,7 @@
                         <tr>
                             <td class="fw-bold text-slate-500">#{{ $product->id }}</td>
                             <td><strong class="text-slate-900 fs-6">{{ $product->name }}</strong></td>
-                            <td><span class="badge bg-indigo-50 text-indigo-700 border border-indigo-200">{{ $product->category->name }}</span></td>
+                            <td><span class="badge" style="background:#312e81;color:#ffffff;font-size:0.85rem;font-weight:800;padding:6px 12px;border-radius:12px;">{{ $product->category->name }}</span></td>
                             <td class="text-slate-600 fw-semibold">{{ number_format($product->purchase_price, 2) }} ج.م</td>
                             <td class="fw-bold text-indigo-600 fs-6">{{ number_format($product->sale_price, 2) }} ج.م</td>
                             <td>

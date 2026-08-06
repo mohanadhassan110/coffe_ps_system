@@ -26,25 +26,25 @@ class PosController extends Controller
     ) {}
 
     /**
-     * الشاشة الرئيسية الموحدة لنقطة البيع
+     * الشاشة الرئيسية الموحدة لنقطة البيع (Single-Screen Unified POS)
      */
     public function index(Request $request)
     {
-        // تحديد التبويب النشط (أجهزة / كافيه)
-        $activeTab = $request->get('tab', 'devices'); // 'devices' | 'cafe'
+        // تصفية العرض (الكل / أجهزة / طاولات / تيك أواي)
+        $filter = $request->get('filter', 'all');
 
         // جميع الأجهزة مع الجلسة النشطة إن وجدت
         $devices = Device::with(['activeSession.items.product', 'activeSession.user'])
             ->orderBy('name')
             ->get();
 
-        // طلبات الكافيه المفتوحة
+        // طلبات الكافيه المفتوحة (طاولات وتيك أواي)
         $openCafeOrders = CafeOrder::open()
             ->with(['user', 'items.product'])
             ->latest()
             ->get();
 
-        // التصنيفات والمنتجات
+        // التصنيفات والمنتجات (قائمة السريعة)
         $categories = Category::with(['products' => function ($q) {
             $q->orderBy('name');
         }])->orderBy('name')->get();
@@ -79,7 +79,24 @@ class PosController extends Controller
             }
         }
 
-        // إحصائيات سريعة
+        // إذا لم يتم تحديد عنصر يدويًا، نحاول اختيار أول عنصر نشط افتراضيًا لتسهيل العمل على الكاشير
+        if (!$selectedEntity) {
+            $firstActiveSession = GameSession::active()->first();
+            if ($firstActiveSession) {
+                $selectedEntity = $firstActiveSession->load(['device', 'user', 'items.product']);
+                $selectedType = 'session';
+                $selectedItems = $selectedEntity->items;
+            } else {
+                $firstOpenCafe = CafeOrder::open()->first();
+                if ($firstOpenCafe) {
+                    $selectedEntity = $firstOpenCafe->load(['user', 'items.product']);
+                    $selectedType = 'cafe';
+                    $selectedItems = $selectedEntity->items;
+                }
+            }
+        }
+
+        // إحصائيات سريعة للشريط العلوي
         $quickStats = [
             'today_revenue' => $this->reportService->getDashboardStats()['today_revenue'] ?? 0,
             'active_sessions' => GameSession::active()->count(),
@@ -87,7 +104,7 @@ class PosController extends Controller
         ];
 
         return view('pos.index', compact(
-            'activeTab',
+            'filter',
             'devices',
             'openCafeOrders',
             'categories',

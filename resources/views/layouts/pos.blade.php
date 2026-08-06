@@ -33,8 +33,8 @@
             --pos-body: #f1f5f9;
             --pos-border: #e2e8f0;
             --pos-text: #0f172a;
-            --pos-text-secondary: #475569;
-            --pos-text-muted: #94a3b8;
+            --pos-text-secondary: #0f172a;
+            --pos-text-muted: #1e293b;
         }
 
         * {
@@ -409,38 +409,40 @@
 
         .pos-category-tabs {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             padding: 10px 12px;
             overflow-x: auto;
             flex-shrink: 0;
-            background: #f8fafc;
-            border-bottom: 1px solid var(--pos-border);
+            background: #e2e8f0;
+            border-bottom: 2px solid #cbd5e1;
         }
 
         .pos-category-tabs::-webkit-scrollbar { height: 0; }
 
         .pos-cat-pill {
-            padding: 6px 14px;
+            padding: 7px 16px;
             border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.78rem;
-            border: 1.5px solid var(--pos-border);
-            background: var(--pos-surface);
-            color: var(--pos-text-secondary);
+            font-weight: 800;
+            font-size: 0.82rem;
+            border: 2px solid #64748b;
+            background: #ffffff;
+            color: #0f172a !important;
             cursor: pointer;
             transition: all 0.15s;
             white-space: nowrap;
         }
 
         .pos-cat-pill:hover {
-            border-color: var(--pos-primary);
-            color: var(--pos-primary);
+            border-color: #4f46e5;
+            color: #4f46e5 !important;
+            background: #e0e7ff;
         }
 
         .pos-cat-pill.active {
-            background: var(--pos-primary);
-            color: #fff;
-            border-color: var(--pos-primary);
+            background: #4f46e5 !important;
+            color: #ffffff !important;
+            border-color: #312e81;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.35);
         }
 
         .pos-products-grid {

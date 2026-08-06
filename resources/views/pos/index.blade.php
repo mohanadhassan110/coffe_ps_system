@@ -10,7 +10,7 @@
     <div class="pos-header">
         <div class="pos-brand">
             <i class="bi bi-controller"></i>
-            <span>{{ __('messages.app_name') }}</span>
+            <span>{{ __('messages.app_name') }} — نظام نقطة البيع الموحد</span>
         </div>
 
         <div class="pos-stats-bar">
@@ -31,9 +31,8 @@
         <div class="pos-clock">
             <span class="live-time" id="liveClock">--:--:--</span>
             <div class="pos-nav">
-                <a href="{{ route('dashboard') }}"><i class="bi bi-grid-1x2"></i> لوحة التحكم</a>
                 @if(auth()->user()->isAdmin())
-                <a href="{{ route('reports.daily') }}"><i class="bi bi-bar-chart"></i> التقارير</a>
+                <a href="{{ route('reports.daily') }}"><i class="bi bi-bar-chart"></i> التقارير والتحليلات</a>
                 @endif
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
@@ -44,35 +43,33 @@
     </div>
 
     {{-- ════════════════════════════════════ --}}
-    {{-- الجسم الثلاثي (Three Panels)        --}}
+    {{-- الجسم الثلاثي (Three Unified Panels) --}}
     {{-- ════════════════════════════════════ --}}
     <div class="pos-body">
 
         {{-- ═══════════════════════════════ --}}
-        {{-- لوحة 1: شبكة الأجهزة / الطاولات --}}
+        {{-- لوحة 1: بيئة العمل الموحدة        --}}
+        {{-- (جميع الأجهزة والطاولات والتيك أواي) --}}
         {{-- ═══════════════════════════════ --}}
         <div class="pos-panel-workspace">
             <div class="pos-panel-header">
+                <h6><i class="bi bi-grid-fill me-1" style="color:var(--pos-primary);"></i> بيئة العمل (الأجهزة والطاولات)</h6>
                 <div class="pos-tab-switcher">
-                    <a href="{{ route('pos.index', ['tab' => 'devices', 'selected' => request('selected')]) }}"
-                       class="pos-tab-btn {{ $activeTab === 'devices' ? 'active' : '' }}">
-                        <i class="bi bi-controller"></i> أجهزة البلايستيشن
-                    </a>
-                    <a href="{{ route('pos.index', ['tab' => 'cafe', 'selected' => request('selected')]) }}"
-                       class="pos-tab-btn {{ $activeTab === 'cafe' ? 'active' : '' }}">
-                        <i class="bi bi-cup-hot-fill"></i> صالة الكافيه
-                    </a>
+                    <button class="pos-tab-btn active" data-workspace-filter="all">الكل</button>
+                    <button class="pos-tab-btn" data-workspace-filter="ps"><i class="bi bi-controller"></i> بلايستيشن</button>
+                    <button class="pos-tab-btn" data-workspace-filter="tables"><i class="bi bi-cup-hot"></i> طاولات</button>
+                    <button class="pos-tab-btn" data-workspace-filter="takeaway"><i class="bi bi-bag"></i> تيك أواي</button>
                 </div>
             </div>
 
             <div class="pos-panel-body">
-                @if($activeTab === 'devices')
-                {{-- ═════ شبكة أجهزة البلايستيشن ═════ --}}
                 <div class="pos-device-grid">
+
+                    {{-- ═════ أجهزة البلايستيشن ═════ --}}
                     @foreach($devices as $device)
                         @if($device->status === 'available')
-                        {{-- جهاز متاح - يفتح مودال بدء الجلسة --}}
-                        <div class="pos-device-card available" onclick="openStartSessionModal({{ $device->id }}, '{{ $device->name }}', '{{ $device->type_name }}', {{ $device->hourly_rate }})">
+                        {{-- جهاز متاح --}}
+                        <div class="pos-device-card available workspace-item ps" onclick="openStartSessionModal({{ $device->id }}, '{{ $device->name }}', '{{ $device->type_name }}', {{ $device->hourly_rate }})">
                             <span class="device-status-dot"></span>
                             <div class="device-name"><i class="bi bi-display me-1"></i> {{ $device->name }}</div>
                             <div class="device-type">{{ $device->type_name }} — {{ number_format($device->hourly_rate, 2) }} ج.م/ساعة</div>
@@ -82,10 +79,10 @@
                         </div>
 
                         @elseif($device->status === 'occupied' && $device->activeSession)
-                        {{-- جهاز مشغول - اضغط لتحديده --}}
+                        {{-- جهاز مشغول --}}
                         @php $sess = $device->activeSession; @endphp
-                        <a href="{{ route('pos.index', ['tab' => 'devices', 'selected' => 'session-'.$sess->id]) }}"
-                           class="pos-device-card occupied {{ ($selectedType === 'session' && $selectedEntity?->id === $sess->id) ? 'selected' : '' }}">
+                        <a href="{{ route('pos.index', ['selected' => 'session-'.$sess->id]) }}"
+                           class="pos-device-card occupied workspace-item ps {{ ($selectedType === 'session' && $selectedEntity?->id === $sess->id) ? 'selected' : '' }}">
                             <span class="device-status-dot"></span>
                             <div class="device-name"><i class="bi bi-display me-1"></i> {{ $device->name }}</div>
                             <div class="device-type">{{ $sess->client_name ?? __('messages.guest') }}</div>
@@ -95,78 +92,68 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="device-cost">{{ number_format($sess->calculatePlaystationCost(), 2) }} ج.م</span>
-                                <small style="font-weight:700;font-size:0.72rem;color:#94a3b8;">{{ $sess->items->count() }} صنف</small>
+                                <small style="font-weight:800;font-size:0.75rem;color:#0f172a;">{{ $sess->items->count() }} صنف</small>
                             </div>
                         </a>
 
                         @elseif($device->status === 'maintenance')
                         {{-- جهاز صيانة --}}
-                        <div class="pos-device-card maintenance">
+                        <div class="pos-device-card maintenance workspace-item ps">
                             <span class="device-status-dot"></span>
                             <div class="device-name"><i class="bi bi-tools me-1"></i> {{ $device->name }}</div>
                             <div class="device-type">صيانة</div>
                         </div>
                         @endif
                     @endforeach
-                </div>
 
-                @else
-                {{-- ═════ شبكة صالة الكافيه والطاولات ═════ --}}
-                <div class="pos-device-grid">
-                    {{-- الطلبات المفتوحة --}}
+                    {{-- ═════ طلبات الكافيه النشطة (طاولات وتيك أواي) ═════ --}}
                     @foreach($openCafeOrders as $order)
-                    <a href="{{ route('pos.index', ['tab' => 'cafe', 'selected' => 'cafe-'.$order->id]) }}"
-                       class="pos-cafe-card active-order {{ ($selectedType === 'cafe' && $selectedEntity?->id === $order->id) ? 'selected' : '' }}">
+                    @php $isTable = $order->order_type === 'table'; @endphp
+                    <a href="{{ route('pos.index', ['selected' => 'cafe-'.$order->id]) }}"
+                       class="pos-cafe-card active-order workspace-item {{ $isTable ? 'tables' : 'takeaway' }} {{ ($selectedType === 'cafe' && $selectedEntity?->id === $order->id) ? 'selected' : '' }}">
                         <div class="d-flex justify-content-between align-items-center">
                             <span style="font-weight:800;font-size:0.92rem;color:var(--pos-text);">
-                                <i class="bi bi-{{ $order->order_type === 'table' ? 'grid-1x2' : 'bag' }} me-1" style="color:#f59e0b;"></i>
+                                <i class="bi bi-{{ $isTable ? 'grid-1x2' : 'bag-fill' }} me-1" style="color:#f59e0b;"></i>
                                 {{ $order->order_type_name }}
-                                @if($order->table_number)
-                                    — {{ $order->table_number }}
-                                @endif
                             </span>
-                            <span style="font-size:0.72rem;font-weight:700;color:#94a3b8;">
-                                #{{ $order->id }}
-                            </span>
+                            <span style="font-size:0.75rem;font-weight:800;color:#0f172a;">#{{ $order->id }}</span>
                         </div>
                         @if($order->client_name)
-                        <div style="font-size:0.78rem;font-weight:600;color:var(--pos-text-secondary);">{{ $order->client_name }}</div>
+                        <div style="font-size:0.8rem;font-weight:700;color:#0f172a;">{{ $order->client_name }}</div>
                         @endif
                         <div class="d-flex justify-content-between align-items-center mt-1">
                             <span style="font-weight:800;font-size:0.95rem;color:var(--pos-primary);">
                                 {{ number_format($order->total_amount, 2) }} ج.م
                             </span>
-                            <span style="font-size:0.72rem;font-weight:700;color:#94a3b8;">{{ $order->items->count() }} صنف</span>
+                            <span style="font-size:0.75rem;font-weight:800;color:#0f172a;">{{ $order->items->count() }} صنف</span>
                         </div>
                     </a>
                     @endforeach
 
-                    {{-- زر فتح طلب جديد - طاولة --}}
-                    <div class="pos-cafe-card empty-table" onclick="openNewCafeOrderModal('table')">
+                    {{-- ═════ أزرار إضافة طلب جديدة مسجلة داخل نفس الشبكة ═════ --}}
+                    <div class="pos-cafe-card empty-table workspace-item tables" onclick="openNewCafeOrderModal('table')">
                         <i class="bi bi-plus-circle" style="font-size:1.8rem;"></i>
                         <span style="font-weight:700;font-size:0.82rem;">طلب طاولة جديد</span>
                     </div>
 
-                    {{-- زر فتح طلب جديد - تيك أواي --}}
-                    <div class="pos-cafe-card empty-table" onclick="openNewCafeOrderModal('takeaway')">
+                    <div class="pos-cafe-card empty-table workspace-item takeaway" onclick="openNewCafeOrderModal('takeaway')">
                         <i class="bi bi-bag-plus" style="font-size:1.8rem;"></i>
                         <span style="font-weight:700;font-size:0.82rem;">تيك أواي جديد</span>
                     </div>
+
                 </div>
-                @endif
             </div>
         </div>
 
         {{-- ═══════════════════════════════ --}}
-        {{-- لوحة 2: قائمة المنتجات          --}}
+        {{-- لوحة 2: قائمة المنتجات السريعة   --}}
         {{-- ═══════════════════════════════ --}}
         <div class="pos-panel-products">
             <div class="pos-panel-header">
                 <h6><i class="bi bi-grid-3x3-gap-fill me-1" style="color:var(--pos-primary);"></i> قائمة المنتجات</h6>
             </div>
 
-            @if($selectedEntity)
-            {{-- شريط التصنيفات --}}
+            {{-- شريط تصنيفات المنتجات --}}
             <div class="pos-category-tabs">
                 <button class="pos-cat-pill active" data-category="all">الكل</button>
                 @foreach($categories as $cat)
@@ -178,6 +165,7 @@
             <div class="pos-products-grid" id="productsGrid">
                 @foreach($categories as $cat)
                     @foreach($cat->products as $product)
+                    @if($selectedEntity)
                     <form action="{{ $selectedType === 'session' ? route('sessions.addItem', $selectedEntity) : route('cafe-orders.addItem', $selectedEntity) }}"
                           method="POST"
                           class="pos-prod-item cat-{{ $cat->id }}"
@@ -185,7 +173,7 @@
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="pos-prod-card {{ $product->stock_quantity <= 0 ? 'disabled' : '' }}">
+                        <button type="submit" class="pos-prod-card {{ $product->stock_quantity <= 0 ? 'disabled' : '' }}" title="{{ $product->name }}">
                             <div>
                                 <div class="prod-name">{{ $product->name }}</div>
                                 <div class="prod-stock">المخزون: {{ $product->stock_quantity }}</div>
@@ -193,21 +181,24 @@
                             <div class="prod-price">{{ number_format($product->sale_price, 2) }} ج.م</div>
                         </button>
                     </form>
+                    @else
+                    <div class="pos-prod-item cat-{{ $cat->id }}" style="display:contents;">
+                        <button type="button" onclick="alert('يرجى اختيار جهاز أو طاولة أولاً من القائمة على اليسار لبدء إضافة المنتجات')" class="pos-prod-card {{ $product->stock_quantity <= 0 ? 'disabled' : '' }}">
+                            <div>
+                                <div class="prod-name">{{ $product->name }}</div>
+                                <div class="prod-stock">المخزون: {{ $product->stock_quantity }}</div>
+                            </div>
+                            <div class="prod-price">{{ number_format($product->sale_price, 2) }} ج.م</div>
+                        </button>
+                    </div>
+                    @endif
                     @endforeach
                 @endforeach
             </div>
-
-            @else
-            {{-- لا يوجد عنصر مختار --}}
-            <div class="pos-no-selection-overlay">
-                <i class="bi bi-hand-index-thumb"></i>
-                <p>اختر جهاز أو طاولة من القائمة اليمنى<br>لبدء إضافة المنتجات</p>
-            </div>
-            @endif
         </div>
 
         {{-- ═══════════════════════════════ --}}
-        {{-- لوحة 3: سلة الطلب / الفاتورة   --}}
+        {{-- لوحة 3: السلة والفاتورة النشطة  --}}
         {{-- ═══════════════════════════════ --}}
         <div class="pos-panel-cart">
             @if($selectedEntity)
@@ -216,10 +207,9 @@
                 <h6>
                     <i class="bi bi-receipt me-1"></i>
                     @if($selectedType === 'session')
-                        فاتورة — {{ $selectedEntity->device?->name ?? 'كافيه فقط' }}
+                        جلسة — {{ $selectedEntity->device?->name ?? 'بلايستيشن' }}
                     @else
-                        فاتورة — {{ $selectedEntity->order_type_name }}
-                        @if($selectedEntity->table_number) ({{ $selectedEntity->table_number }}) @endif
+                        طلب — {{ $selectedEntity->order_type_name }}
                     @endif
                 </h6>
                 <div class="cart-entity-info">
@@ -253,12 +243,12 @@
                 <div class="pos-cart-empty">
                     <i class="bi bi-cart3"></i>
                     <p style="font-weight:700;font-size:0.82rem;">السلة فارغة</p>
-                    <span style="font-size:0.75rem;">اضغط على المنتجات لإضافتها</span>
+                    <span style="font-size:0.75rem;">اضغط على المنتجات لإضافتها فوراً</span>
                 </div>
                 @endforelse
             </div>
 
-            {{-- إجماليات وأزرار --}}
+            {{-- إجماليات وأزرار الدفع --}}
             <div class="pos-cart-footer">
                 @if($selectedType === 'session' && $selectedEntity->device)
                 <div class="pos-cart-total-row">
@@ -277,23 +267,21 @@
                             $psCost = ($selectedType === 'session' && $selectedEntity->device)
                                 ? $selectedEntity->calculatePlaystationCost() : 0;
                             $cafeCost = $selectedItems->sum('total_price');
+                            $grandExpected = $psCost + $cafeCost;
                         @endphp
-                        {{ number_format($psCost + $cafeCost, 2) }} ج.م
+                        {{ number_format($grandExpected, 2) }} ج.م
                     </span>
                 </div>
 
                 <div class="pos-cart-actions">
-                    <a href="{{ $selectedType === 'session'
-                        ? route('sessions.checkout', $selectedEntity)
-                        : route('cafe-orders.checkout', $selectedEntity) }}"
-                       class="pos-btn-checkout primary">
+                    <button type="button" class="pos-btn-checkout primary" onclick="openQuickCheckoutModal({{ $grandExpected }})">
                         <i class="bi bi-cash-stack"></i> إتمام الدفع وتحصيل الفاتورة
-                    </a>
+                    </button>
                     <form action="{{ $selectedType === 'session'
                         ? route('sessions.cancel', $selectedEntity)
                         : route('cafe-orders.cancel', $selectedEntity) }}"
                           method="POST"
-                          onsubmit="return confirm('هل أنت متأكد من الإلغاء؟')">
+                          onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب/الجلسة؟')">
                         @csrf
                         <button type="submit" class="pos-btn-checkout danger w-100">
                             <i class="bi bi-x-circle"></i> إلغاء
@@ -364,8 +352,8 @@
             </div>
 
             <div class="modal-actions">
-                <button type="submit" class="btn-modal-confirm"><i class="bi bi-play-fill me-1"></i> بدء الجلسة</button>
-                <button type="button" class="btn-modal-cancel" onclick="closeModal('startSessionModal')">إلغاء</button>
+                <button type="submit" class="btn-modal-confirm" style="background:var(--pos-success);color:#fff;"><i class="bi bi-play-fill me-1"></i> بدء الجلسة</button>
+                <button type="button" class="btn-modal-cancel" style="background:#e2e8f0;color:#334155;" onclick="closeModal('startSessionModal')">إلغاء</button>
             </div>
         </form>
     </div>
@@ -397,12 +385,57 @@
             </div>
 
             <div class="modal-actions">
-                <button type="submit" class="btn-modal-confirm"><i class="bi bi-plus-lg me-1"></i> فتح الطلب</button>
-                <button type="button" class="btn-modal-cancel" onclick="closeModal('newCafeOrderModal')">إلغاء</button>
+                <button type="submit" class="btn-modal-confirm" style="background:var(--pos-primary);color:#fff;"><i class="bi bi-plus-lg me-1"></i> فتح الطلب</button>
+                <button type="button" class="btn-modal-cancel" style="background:#e2e8f0;color:#334155;" onclick="closeModal('newCafeOrderModal')">إلغاء</button>
             </div>
         </form>
     </div>
 </div>
+
+{{-- ════════════════════════════════════ --}}
+{{-- مودال إتمام الدفع وتحصيل الفاتورة      --}}
+{{-- ════════════════════════════════════ --}}
+@if($selectedEntity)
+<div class="pos-modal-backdrop" id="quickCheckoutModal">
+    <div class="pos-modal">
+        <h5><i class="bi bi-cash-stack me-2" style="color:var(--pos-success);"></i> تحصيل وإتمام الفاتورة</h5>
+        <form action="{{ $selectedType === 'session' ? route('sessions.close', $selectedEntity) : route('cafe-orders.close', $selectedEntity) }}" method="POST">
+            @csrf
+
+            <div class="p-3 mb-3" style="background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
+                <div class="d-flex justify-content-between mb-1" style="font-size:0.88rem;font-weight:700;">
+                    <span>إجمالي الحساب:</span>
+                    <span id="checkoutModalSubtotal">{{ number_format($grandExpected ?? 0, 2) }} ج.م</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">الخصم (ج.م)</label>
+                <input type="number" step="0.5" name="discount" id="checkoutDiscountInput" class="form-control" value="0" min="0" oninput="updateCheckoutFinalTotal({{ $grandExpected ?? 0 }})">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">المبلغ النهائي المطلوب</label>
+                <div class="fw-black fs-4 text-success" id="checkoutModalFinalTotal">{{ number_format($grandExpected ?? 0, 2) }} ج.م</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">طريقة الدفع</label>
+                <select name="payment_method" class="form-select fw-bold">
+                    <option value="cash">💵 كاش (نقداً)</option>
+                    <option value="vodafone_cash">📱 فودافون كاش</option>
+                    <option value="card">💳 بطاقة / فيزا</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="submit" class="btn-modal-confirm" style="background:var(--pos-success);color:#fff;"><i class="bi bi-check-circle me-1"></i> تأكيد وتحصيل</button>
+                <button type="button" class="btn-modal-cancel" style="background:#e2e8f0;color:#334155;" onclick="closeModal('quickCheckoutModal')">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 
 @push('scripts')
 <script>
@@ -412,13 +445,28 @@ function updateClock() {
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
     const s = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('liveClock').textContent = h + ':' + m + ':' + s;
+    const clockEl = document.getElementById('liveClock');
+    if (clockEl) clockEl.textContent = h + ':' + m + ':' + s;
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-// ═══ تحديث تلقائي كل 60 ثانية ═══
-setInterval(() => location.reload(), 60000);
+// ═══ تصفية عناصر بيئة العمل (Workspace Filters) ═══
+document.querySelectorAll('[data-workspace-filter]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('[data-workspace-filter]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const filter = this.getAttribute('data-workspace-filter');
+        document.querySelectorAll('.workspace-item').forEach(item => {
+            if (filter === 'all' || item.classList.contains(filter)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+});
 
 // ═══ تصفية المنتجات حسب التصنيف ═══
 document.querySelectorAll('.pos-cat-pill').forEach(btn => {
@@ -454,9 +502,24 @@ function openNewCafeOrderModal(type) {
     document.getElementById('newCafeOrderModal').classList.add('show');
 }
 
+// ═══ مودال الدفع السريع ═══
+function openQuickCheckoutModal(subtotal) {
+    const modal = document.getElementById('quickCheckoutModal');
+    if (modal) {
+        modal.classList.add('show');
+    }
+}
+
+function updateCheckoutFinalTotal(subtotal) {
+    const discount = parseFloat(document.getElementById('checkoutDiscountInput').value) || 0;
+    const finalTotal = Math.max(0, subtotal - discount);
+    document.getElementById('checkoutModalFinalTotal').textContent = finalTotal.toFixed(2) + ' ج.م';
+}
+
 // ═══ إغلاق المودال ═══
 function closeModal(id) {
-    document.getElementById(id).classList.remove('show');
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('show');
 }
 
 // إغلاق عند الضغط على الخلفية

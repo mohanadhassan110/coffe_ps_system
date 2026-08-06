@@ -34,8 +34,8 @@ Route::middleware('auth')->group(function () {
     // تسجيل الخروج
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // لوحة التحكم
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // نقطة البيع الموحدة (الشاشة الرئيسية للنظام)
+    Route::get('/', [PosController::class, 'index'])->name('dashboard');
 
     // ========================
     // الجلسات (متاح للمدير والكاشير)
