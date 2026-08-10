@@ -1,59 +1,168 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
+<h1 align="center">🎮 Unified PlayStation & Café POS System ☕</h1>
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <b>نظام نقاط البيع الموحد لإدارة صالات البلايستيشن والكافيهات</b><br>
+  <i>A unified single-screen POS management system built for commercial PlayStation lounges and cafés.</i>
 </p>
 
-## About Laravel
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-11.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 11">
+  <img src="https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2">
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white" alt="Alpine.js">
+  <img src="https://img.shields.io/badge/RTL-Arabic_Native-10B981?style=for-the-badge" alt="Arabic RTL">
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 نبذة عن المشروع (Project Overview)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+يُعد **نظام نقاط البيع الموحد (Unified POS System)** حلاً برمجياً متكاملاً وفائق السرعة تم تطويره خصيصاً ليناسب متطلبات **صالات البلايستيشن والكافيهات المدمجة** في السوق المصري والوطن العربي. 
 
-## Learning Laravel
+يقوم النظام على رؤية **"إدارة الشاشة الواحدة" (Single-Screen Management)**، حيث يجمع بين:
+1. **تتبع جلسات البلايستيشن اللحظية** وحساب وقت اللعب بالدقيقة والثانية (Single / Multi).
+2. **محاسبة طاولات الكافيه ومبيعات التيك أواي السريعة**.
+3. **الخصم التلقائي اللحظي من المخزون** عند بيع أي صنف.
+4. **تجميع كافة الخدمات والمشروبات في فاتورة حرارية واحدة موحدة**.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ⚡ المميزات الرئيسية (Key Features)
 
-## Laravel Sponsors
+- 🖥️ **نظام نقاط بيع موحد (Single-Screen Unified POS):** شاشة رئيسية واحدة تسمح لمسؤول الكاشير بإدارة الأجهزة، الطاولات، والتيك أواي دون الحاجة للتنقل بين الصفحات.
+- 🎮 **إدارة جلسات البلايستيشن (PlayStation Session Tracking):**
+  - دعم الجلسات المفتوحة (Open Sessions) والجلسات مسبوقة الدفع (Prepaid Sessions).
+  - التبديل المرن بين تسعيرة اللعب الفردي (Single) والجماعي (Multi) خلال نفس الجلسة.
+  - حساب آلي دقيق للوقت والتكلفة بالدقيقة والثانية.
+- ☕ **إدارة طاولات الكافيه والتيك أواي (Café Tables & Takeaway):** محاسبة مستقلة لطاولات الصالة الخارجية والطلبات السريعة على الكاونتر.
+- 📦 **الخصم التلقائي للمخزون (Real-Time Inventory Control):** خصم فوري لرصيد المنتجات فور بيعها مع تنبيهات ذكية بنواقص المخزون لمنع النفاذ.
+- 💸 **تسجيل المصروفات والنثريات (Expense Management):** خصم المصروفات اليومية تلقائياً للحصول على **صافي الدخل النهائي للوردية**.
+- 🎨 **واجهة لمسية فاتحة عالية التباين (High-Contrast Light Theme):** تصميم مريح للعين يعتمد على **النص الأسود الداكن صريح الوضوح** مع دعم كامل للغة العربية والاتجاه من اليمين إلى اليسار (Arabic RTL).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🛠️ التقنيات المستخدمة (Tech Stack)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 🖥️ البنية التحتية والهيكلية (Architecture Layout)
+المشروع مقسم إلى مجلدين رئيسيين لسهولة الصيانة والتأطير البرمجي:
+- **`backend/`**: يحتوي على كود Laravel 11، قاعدة البيانات، المسارات، والاختبارات.
+- **`frontend/`**: يحتوي على واجهات المستخدم (Blade Views)، ملفات الأنماط (CSS/Tailwind)، وتكاوين بناء الأصول (Vite).
 
-## Contributing
+```
+coffe_ps_system/
+├── backend/                  # Laravel 11 Application Core
+│   ├── app/                  # Controllers, Models, Services & Middleware
+│   ├── config/               # System & View Configurations
+│   ├── database/             # Migrations, Factories & Seeders
+│   ├── routes/               # Web & Console Routes
+│   ├── storage/              # Cache & App Storage
+│   └── tests/                # Feature & Unit Test Suite
+│
+├── frontend/                 # UI Templates & Asset Management
+│   ├── views/                # Blade Templates (POS, Reports, Sessions, etc.)
+│   ├── css/                  # Application Stylesheets
+│   └── js/                   # Alpine.js & JavaScript Modules
+│
+└── PROJECT_PROFILE.md        # Comprehensive System Documentation
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### ⚙️ التقنيات الأساسية:
+| الطبقة | التقنيات |
+| :--- | :--- |
+| **Backend Framework** | PHP 8.2+ / Laravel 11 (MVC Architecture) |
+| **Database** | MySQL / SQLite (with `DB::transaction` financial locks) |
+| **Frontend UI** | Blade Templates, Alpine.js, Tailwind CSS |
+| **Testing Suite** | PHPUnit 11 (46 Feature & Unit Tests) |
+| **Receipt Printing** | Direct Thermal Printer Engine (80mm / 58mm) |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🚀 خطوات التثبيت والتشغيل (Installation & Setup Guide)
 
-## Security Vulnerabilities
+### 📋 متطلبات التشغيل (Prerequisites):
+- PHP >= 8.2
+- Composer
+- Node.js & NPM
+- SQLite / MySQL Database
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+### 1️⃣ استنساخ المستودع (Clone Repository):
+```bash
+git clone https://github.com/mohanadhassan110/coffe_ps_system.git
+cd coffe_ps_system
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+### 2️⃣ اعداد وتجهيز الباك إند (Setup Backend):
+```bash
+# الانتقال لمجلد الباك إند
+cd backend
+
+# تثبيت الحزم والمكتبات البرمجية
+composer install
+
+# إنشاء ملف البيئة
+cp .env.example .env
+
+# توليد مفتاح التطبيق
+php artisan key:generate
+
+# تشغيل قواعد البيانات وتغذيتها بالبيانات الأولية
+php artisan migrate --seed
+
+# تشغيل خادم التطبيق المحتلي
+php artisan serve
+```
+> الخادم سيعمل على العنوان المحلي: `http://127.0.0.1:8000`
+
+---
+
+### 3️⃣ اعداد وتجهيز الواجهة والأصول (Setup Frontend):
+من نافذة مبوبة أخرى في التيرمينال:
+```bash
+# الانتقال لمجلد الواجهة
+cd frontend
+
+# تثبيت حزم الجافاسكريبت
+npm install
+
+# تشغيل خادم التطوير اللحظي للأصول
+npm run dev
+```
+
+---
+
+## 🧪 تشغيل الاختبارات الآلية (Running Automated Tests)
+
+يحتوي النظام على **46 اختباراً آلياً** مخصصاً لضمان صحة المعاملات الحسابية، تتبع الوقت، الخصم الآلي من المخزن، وسلامة تقارير التقفيل اليومي.
+
+لتشغيل الاختبارات:
+```bash
+cd backend
+vendor/bin/phpunit
+```
+
+---
+
+## 📸 معاينة واجهات النظام (UI Screenshots & Walkthrough)
+
+### 🖥️ 1. الشاشة الرئيسية الموحدة لنقاط البيع (Unified POS Screen)
+تجمع الأجهزة النشطة، طاولات الكافيه، وقائمة المنتجات اللمسية في واجهة واحدة بدون تنقل.
+
+---
+
+### 📊 2. تقرير إغلاق الوردية والتحليلات اليومية (Shift Closing & Reports)
+تقارير شفافة تفصل بين دخل البلايستيشن، دخل الكافيه، والمصروفات لحساب صافي الأرباح الصافي.
+
+---
+
+## 📄 التوثيق الشامل (Comprehensive System Profile)
+لمزيد من التفاصيل الفنية، التخطيط الهيكلي، ودراسة الجدوى التشغيلية، راجع الملف التوثيقي:
+📄 [PROJECT_PROFILE.md](./PROJECT_PROFILE.md)
+
+---
+
+## 📝 الترخيص (License)
+هذا المشروع مرخص بموجب [MIT License](LICENSE).
