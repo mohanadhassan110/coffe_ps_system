@@ -42,7 +42,7 @@
                     </div>
                     <div class="px-3 py-2 d-flex align-items-center gap-2" style="background:#f8fafc;font-size:0.78rem;">
                         <span class="badge" style="background:#dcfce7;color:#15803d;">{{ $report['sessions_count'] + ($report['cafe_orders_count'] ?? 0) }} عملية</span>
-                        <span class="text-slate-500 fw-semibold">إجمالي اليوم</span>
+                        <span class="text-slate-900 fw-semibold">إجمالي اليوم</span>
                     </div>
                 </div>
             </div>
@@ -211,7 +211,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background:#f8fafc;border:1px solid #e2e8f0;">
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge" style="background:#e0e7ff;color:#4338ca;font-size:0.8rem;">{{ __('messages.payment_methods.' . $method) }}</span>
-                            <small class="text-slate-500 fw-semibold">({{ $data['count'] }} عملية)</small>
+                            <small class="text-slate-900 fw-semibold">({{ $data['count'] }} عملية)</small>
                         </div>
                         <strong style="color:#1e293b;font-size:0.92rem;">{{ number_format($data['total'], 2) }} {{ __('messages.currency') }}</strong>
                     </div>

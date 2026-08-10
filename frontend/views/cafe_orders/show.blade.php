@@ -85,7 +85,7 @@
                     @else
                     <div class="empty-state py-4">
                         <i class="bi bi-cup text-slate-300"></i>
-                        <p class="mb-0 fw-semibold text-slate-500">لم يتم إضافة أصناف لهذا الطلب بعد</p>
+                        <p class="mb-0 fw-semibold text-slate-900">لم يتم إضافة أصناف لهذا الطلب بعد</p>
                     </div>
                     @endif
                 </div>
@@ -111,7 +111,7 @@
                 <div class="card-header bg-white border-bottom pb-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-slate-900 mb-0"><i class="bi bi-grid-3x3-gap-fill text-indigo-600 me-2"></i>قائمة المشروبات والمأكولات</h5>
-                        <small class="text-slate-500 fw-semibold">اضغط على أي صنف لإضافته مباشرة للطلب</small>
+                        <small class="text-slate-900 fw-semibold">اضغط على أي صنف لإضافته مباشرة للطلب</small>
                     </div>
 
                     {{-- شريط التصفية السريعة للتصنيفات --}}

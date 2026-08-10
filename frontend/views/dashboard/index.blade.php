@@ -80,7 +80,7 @@
                 <div class="card-body text-center p-4">
                     <i class="bi bi-controller text-indigo-600 mb-2" style="font-size:2.4rem;"></i>
                     <h6 class="text-slate-600 fw-bold mb-1">{{ __('messages.dashboard_stats.ps_revenue') }}</h6>
-                    <h3 class="fw-black text-slate-900 mb-0">{{ number_format($stats['today_ps_revenue'], 2) }} <small class="fs-6 text-slate-500">{{ __('messages.currency') }}</small></h3>
+                    <h3 class="fw-black text-slate-900 mb-0">{{ number_format($stats['today_ps_revenue'], 2) }} <small class="fs-6 text-slate-900">{{ __('messages.currency') }}</small></h3>
                 </div>
             </div>
         </div>
@@ -89,7 +89,7 @@
                 <div class="card-body text-center p-4">
                     <i class="bi bi-cup-hot text-amber-600 mb-2" style="font-size:2.4rem;"></i>
                     <h6 class="text-slate-600 fw-bold mb-1">{{ __('messages.dashboard_stats.cafe_revenue') }}</h6>
-                    <h3 class="fw-black text-slate-900 mb-0">{{ number_format($stats['today_cafe_revenue'], 2) }} <small class="fs-6 text-slate-500">{{ __('messages.currency') }}</small></h3>
+                    <h3 class="fw-black text-slate-900 mb-0">{{ number_format($stats['today_cafe_revenue'], 2) }} <small class="fs-6 text-slate-900">{{ __('messages.currency') }}</small></h3>
                 </div>
             </div>
         </div>
@@ -99,7 +99,7 @@
                     <i class="bi bi-graph-up-arrow text-emerald-600 mb-2" style="font-size:2.4rem;"></i>
                     <h6 class="text-slate-600 fw-bold mb-1">{{ __('messages.dashboard_stats.net_revenue') }}</h6>
                     <h3 class="fw-black mb-0 {{ $stats['net_revenue'] >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
-                        {{ number_format($stats['net_revenue'], 2) }} <small class="fs-6 text-slate-500">{{ __('messages.currency') }}</small>
+                        {{ number_format($stats['net_revenue'], 2) }} <small class="fs-6 text-slate-900">{{ __('messages.currency') }}</small>
                     </h3>
                 </div>
             </div>
@@ -155,7 +155,7 @@
                     @else
                         <div class="empty-state py-4">
                             <i class="bi bi-controller text-slate-300"></i>
-                            <p class="mb-0 fw-semibold text-slate-500">لا توجد جلسات بلايستيشن نشطة حالياً</p>
+                            <p class="mb-0 fw-semibold text-slate-900">لا توجد جلسات بلايستيشن نشطة حالياً</p>
                         </div>
                     @endif
                 </div>
