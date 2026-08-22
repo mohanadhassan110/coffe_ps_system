@@ -27,6 +27,14 @@
                             <label class="form-label text-slate-900 fw-bold">{{ __('messages.table.hourly_rate') }} ({{ __('messages.currency') }})</label>
                             <input type="number" name="hourly_rate" class="form-control" value="{{ old('hourly_rate', $device->hourly_rate) }}" step="0.50" min="0" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label text-slate-900 fw-bold">{{ __('messages.table.total_controllers') }}</label>
+                            @php
+                                $activeOnDevice = $device->gameSessions()->where('status', 'active')->sum('active_controllers');
+                            @endphp
+                            <input type="number" name="total_controllers" class="form-control" value="{{ old('total_controllers', $device->total_controllers) }}" min="{{ max(0, $activeOnDevice) }}" max="8" required>
+                            <small class="text-dark fw-bold">عدد أذرع التحكم المادية المتوفرة على هذا الجهاز.@if($activeOnDevice > 0) ({{ __('messages.table.controllers_in_use', ['count' => $activeOnDevice]) }})@endif</small>
+                        </div>
                         <div class="mb-4">
                             <label class="form-label text-slate-900 fw-bold">{{ __('messages.table.status') }}</label>
                             <select name="status" class="form-select">

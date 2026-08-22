@@ -101,6 +101,7 @@ class PosController extends Controller
             'today_revenue' => $this->reportService->getDashboardStats()['today_revenue'] ?? 0,
             'active_sessions' => GameSession::active()->count(),
             'open_cafe_orders' => CafeOrder::open()->count(),
+            'controllers' => $this->sessionService->getLoungeControllersStats(),
         ];
 
         return view('pos.index', compact(

@@ -26,6 +26,12 @@
                 <span class="stat-dot" style="background:#f59e0b;"></span>
                 طلبات كافيه: <strong>{{ $quickStats['open_cafe_orders'] }}</strong>
             </div>
+            @if(isset($quickStats['controllers']))
+            <div class="pos-mini-stat">
+                <span class="stat-dot" style="background:#8b5cf6;"></span>
+                الأذرع المتاحة: <strong>{{ $quickStats['controllers']['available'] }} / {{ $quickStats['controllers']['total'] }}</strong>
+            </div>
+            @endif
         </div>
 
         <div class="pos-clock">
@@ -69,10 +75,20 @@
                     @foreach($devices as $device)
                         @if($device->status === 'available')
                         {{-- جهاز متاح --}}
-                        <div class="pos-device-card available workspace-item ps" onclick="openStartSessionModal({{ $device->id }}, '{{ $device->name }}', '{{ $device->type_name }}', {{ $device->hourly_rate }})">
+                        @php
+                            $deviceIdle = $device->total_controllers;
+                            $isPlayable = !in_array($device->type, ['billiard']);
+                        @endphp
+                        <div class="pos-device-card available workspace-item ps" onclick="openStartSessionModal({{ $device->id }}, '{{ $device->name }}', '{{ $device->type_name }}', {{ $device->hourly_rate }}, {{ $device->total_controllers }}, {{ $deviceIdle ? 'true' : 'false' }})">
                             <span class="device-status-dot"></span>
                             <div class="device-name"><i class="bi bi-display me-1"></i> {{ $device->name }}</div>
                             <div class="device-type">{{ $device->type_name }} — {{ number_format($device->hourly_rate, 2) }} ج.م/ساعة</div>
+                            @if($isPlayable)
+                            <div class="device-controllers">
+                                <i class="bi bi-controller me-1"></i>
+                                الأذرع المتاحة: <strong>{{ $device->total_controllers }}</strong>
+                            </div>
+                            @endif
                             <div class="device-action-btn btn-start-session">
                                 <i class="bi bi-play-fill me-1"></i> بدء جلسة
                             </div>
@@ -90,6 +106,12 @@
                                 <i class="bi bi-stopwatch me-1"></i>
                                 {{ $sess->elapsed_time_formatted }}
                             </div>
+                            @if(!in_array($device->type, ['billiard']))
+                            <div class="device-controllers">
+                                <i class="bi bi-controller me-1"></i>
+                                الأذرع النشطة: <strong>{{ $sess->active_controllers }}</strong> / المتاحة: <strong>{{ $device->idle_controllers }}</strong>
+                            </div>
+                            @endif
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="device-cost">{{ number_format($sess->calculatePlaystationCost(), 2) }} ج.م</span>
                                 <small style="font-weight:800;font-size:0.75rem;color:#0f172a;">{{ $sess->items->count() }} صنف</small>
@@ -102,6 +124,10 @@
                             <span class="device-status-dot"></span>
                             <div class="device-name"><i class="bi bi-tools me-1"></i> {{ $device->name }}</div>
                             <div class="device-type">صيانة</div>
+                            <div class="device-controllers">
+                                <i class="bi bi-controller me-1"></i>
+                                الأذرع المتاحة: <strong>0</strong> / {{ $device->total_controllers }}
+                            </div>
                         </div>
                         @endif
                     @endforeach
@@ -250,6 +276,28 @@
 
             {{-- إجماليات وأزرار الدفع --}}
             <div class="pos-cart-footer">
+                @if($selectedType === 'session' && $selectedEntity->device && !in_array($selectedEntity->device->type, ['billiard']))
+                {{-- تحكم لحظي في عدد أذرع الجلسة النشطة --}}
+                <form action="{{ route('sessions.updateControllers', $selectedEntity) }}" method="POST"
+                      class="controllers-inline-form" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+                    @csrf
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <label for="inlineControllersSelect" class="fw-bold" style="color:#0f172a;font-size:0.85rem;">
+                            <i class="bi bi-controller me-1" style="color:#0f172a;"></i> الأذرع النشطة: {{ $selectedEntity->active_controllers }} / المتاحة: {{ $selectedEntity->device->idle_controllers }}
+                        </label>
+                        <div class="d-flex align-items-center gap-2">
+                            <select name="active_controllers" id="inlineControllersSelect" class="form-select form-select-sm fw-bold" style="width:auto;color:#000;background-color:#fff;">
+                                @for($c = 1; $c <= $selectedEntity->device->total_controllers; $c++)
+                                    <option value="{{ $c }}" {{ $selectedEntity->active_controllers == $c ? 'selected' : '' }}>{{ $c }}</option>
+                                @endfor
+                            </select>
+                            <button type="submit" class="btn btn-sm fw-bold" style="background:#4f46e5;color:#fff;border:none;">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                @endif
                 @if($selectedType === 'session' && $selectedEntity->device)
                 <div class="pos-cart-total-row">
                     <span><i class="bi bi-controller me-1"></i> وقت اللعب</span>
@@ -339,6 +387,12 @@
                         <label class="form-check-label fw-bold" for="modalTypePrepaid">مدفوع مسبقاً</label>
                     </div>
                 </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">عدد أذرع التحكم (اللاعبين)</label>
+                <select name="active_controllers" id="modalControllersSelect" class="form-select fw-bold" style="color:#000;background-color:#fff;" required></select>
+                <small class="form-text text-dark fw-bold" style="color:#0f172a;">لا يمكن تجاوز عدد الأذرع المتاحة على هذا الجهاز.</small>
             </div>
 
             <div class="mb-3" id="modalPrepaidGroup" style="display:none;">
@@ -488,9 +542,31 @@ document.querySelectorAll('.pos-cat-pill').forEach(btn => {
 });
 
 // ═══ مودال بدء جلسة PS ═══
-function openStartSessionModal(deviceId, deviceName, typeName, rate) {
+function openStartSessionModal(deviceId, deviceName, typeName, rate, totalControllers, hasControllers) {
     document.getElementById('modalDeviceId').value = deviceId;
     document.getElementById('modalDeviceName').value = deviceName + ' (' + typeName + ' — ' + rate.toFixed(2) + ' ج.م/ساعة)';
+
+    // بناء قائمة اختيار عدد الأذرع حسب المتاح فعلياً على الجهاز
+    const select = document.getElementById('modalControllersSelect');
+    const groupWrapper = select.closest('.mb-3');
+    select.innerHTML = '';
+
+    if (!hasControllers || totalControllers < 1) {
+        // أجهزة بلا أذرع (مثل البلياردو)
+        groupWrapper.style.display = 'none';
+        select.removeAttribute('required');
+    } else {
+        groupWrapper.style.display = 'block';
+        select.setAttribute('required', 'required');
+        for (let c = 1; c <= totalControllers; c++) {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c + (c === 1 ? ' لاعب (فردي)' : (c === 2 ? ' لاعبين (جماعي)' : ' لاعبين'));
+            if (c === Math.min(2, totalControllers)) opt.selected = true;
+            select.appendChild(opt);
+        }
+    }
+
     document.getElementById('startSessionModal').classList.add('show');
 }
 

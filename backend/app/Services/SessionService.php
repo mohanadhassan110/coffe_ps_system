@@ -27,7 +27,7 @@ class SessionService
     /**
      * بدء جلسة جديدة على جهاز معين
      *
-     * @param array $data ['device_id', 'session_type', 'pre_paid_minutes', 'client_name']
+     * @param array $data ['device_id', 'session_type', 'pre_paid_minutes', 'client_name', 'active_controllers']
      * @return GameSession
      * @throws InvalidArgumentException
      */
@@ -35,6 +35,9 @@ class SessionService
     {
         return DB::transaction(function () use ($data) {
             $device = null;
+            $requestedControllers = isset($data['active_controllers'])
+                ? max(1, (int) $data['active_controllers'])
+                : null; // افتراضياً: لعب جماعي بذراعين (أو حسب المتاح بالجهاز)
 
             // التحقق من الجهاز إذا تم تحديده (ليس طلب كافيه فقط)
             if (!empty($data['device_id'])) {
@@ -46,23 +49,153 @@ class SessionService
                     );
                 }
 
+                if ($requestedControllers === null) {
+                    // افتراضي: لعب جماعي بذراعين أو حسب المتاح بالجهاز
+                    $requestedControllers = $device->total_controllers > 0
+                        ? min(2, $device->total_controllers)
+                        : 0;
+                }
+
+                // ═══ التحقق من صلاحية عدد الأذرع المطلوبة ═══
+                if ($requestedControllers > 0) {
+                    $this->validateControllerAvailability($device, $requestedControllers);
+                }
+
                 // تحديث حالة الجهاز إلى مشغول
                 $device->update(['status' => 'occupied']);
             }
 
             // إنشاء الجلسة
             $session = GameSession::create([
-                'device_id'        => $data['device_id'] ?? null,
-                'user_id'          => Auth::id(),
-                'client_name'      => $data['client_name'] ?? null,
-                'session_type'     => $data['session_type'] ?? 'open',
-                'pre_paid_minutes' => $data['pre_paid_minutes'] ?? null,
-                'start_time'       => Carbon::now(),
-                'status'           => 'active',
+                'device_id'          => $data['device_id'] ?? null,
+                'user_id'            => Auth::id(),
+                'client_name'        => $data['client_name'] ?? null,
+                'session_type'       => $data['session_type'] ?? 'open',
+                'pre_paid_minutes'   => $data['pre_paid_minutes'] ?? null,
+                'active_controllers' => empty($data['device_id']) ? 0 : $requestedControllers,
+                'start_time'         => Carbon::now(),
+                'status'             => 'active',
             ]);
 
             return $session->load('device', 'user');
         });
+    }
+
+    /**
+     * تحديث عدد الأذرع النشطة في جلسة قائمة
+     * (زيادة أو تقليل عدد اللاعبين أثناء الجلسة)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateActiveControllers(GameSession $session, int $controllers): GameSession
+    {
+        if (!$session->isActive()) {
+            throw new InvalidArgumentException(
+                __('messages.errors.session_not_active')
+            );
+        }
+
+        if ($session->isCafeOnly()) {
+            throw new InvalidArgumentException(
+                __('messages.errors.controllers_cafe_only')
+            );
+        }
+
+        return DB::transaction(function () use ($session, $controllers) {
+            $device = Device::lockForUpdate()->findOrFail($session->device_id);
+
+            // الأذرع المستهلكة حالياً من الجلسات الأخرى على نفس الجهاز
+            $usedByOthers = GameSession::active()
+                ->where('device_id', $device->id)
+                ->where('id', '!=', $session->id)
+                ->sum('active_controllers');
+
+            $idle = $device->total_controllers - (int) $usedByOthers;
+
+            if ($controllers < 1) {
+                throw new InvalidArgumentException(
+                    __('messages.errors.controllers_min')
+                );
+            }
+
+            if ($controllers > $device->total_controllers) {
+                throw new InvalidArgumentException(
+                    __('messages.errors.controllers_exceed_total', [
+                        'total' => $device->total_controllers,
+                    ])
+                );
+            }
+
+            if ($controllers > $idle) {
+                throw new InvalidArgumentException(
+                    __('messages.errors.controllers_not_idle', [
+                        'available' => max(0, $idle),
+                    ])
+                );
+            }
+
+            $session->update(['active_controllers' => $controllers]);
+
+            return $session->fresh(['device', 'user', 'items.product']);
+        });
+    }
+
+    /**
+     * التحقق من أن عدد الأذرع المطلوب متاح فعلياً قبل بدء الجلسة
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function validateControllerAvailability(Device $device, int $requested): void
+    {
+        if ($requested < 1) {
+            throw new InvalidArgumentException(
+                __('messages.errors.controllers_min')
+            );
+        }
+
+        // لا يمكن طلب أذرع أكثر من المنافذ المادية للجهاز
+        if ($requested > $device->total_controllers) {
+            throw new InvalidArgumentException(
+                __('messages.errors.controllers_exceed_total', [
+                    'total' => $device->total_controllers,
+                ])
+            );
+        }
+
+        // لا يمكن طلب أذرع أكثر من الأذرع الخاملة حالياً على الجهاز
+        $usedByOthers = GameSession::active()
+            ->where('device_id', $device->id)
+            ->sum('active_controllers');
+
+        $idle = $device->total_controllers - (int) $usedByOthers;
+
+        if ($requested > $idle) {
+            throw new InvalidArgumentException(
+                __('messages.errors.controllers_not_idle', [
+                    'available' => max(0, $idle),
+                ])
+            );
+        }
+    }
+
+    /**
+     * إحصائيات أذرع التحكم لحظياً على مستوى الصالة كلها
+     *
+     * @return array{total: int, occupied: int, available: int}
+     */
+    public function getLoungeControllersStats(): array
+    {
+        $total = (int) Device::where('type', '!=', 'billiard')->sum('total_controllers');
+
+        $occupied = (int) GameSession::active()
+            ->whereNotNull('device_id')
+            ->sum('active_controllers');
+
+        return [
+            'total'     => $total,
+            'occupied'  => min($occupied, $total),
+            'available' => max(0, $total - $occupied),
+        ];
     }
 
     /**

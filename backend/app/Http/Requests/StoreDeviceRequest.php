@@ -14,10 +14,11 @@ class StoreDeviceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => 'required|string|max:255',
-            'type'        => 'required|in:ps4,ps5,vr,billiard',
-            'hourly_rate' => 'required|numeric|min:0',
-            'status'      => 'sometimes|in:available,occupied,maintenance',
+            'name'              => 'required|string|max:255',
+            'type'              => 'required|in:ps4,ps5,vr,billiard',
+            'hourly_rate'       => 'required|numeric|min:0',
+            'status'            => 'sometimes|in:available,occupied,maintenance',
+            'total_controllers' => 'required|integer|min:0|max:8',
         ];
     }
 }

@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/sessions/create', [SessionController::class, 'create'])->name('sessions.create');
         Route::post('/sessions', [SessionController::class, 'store'])->name('sessions.store');
         Route::get('/sessions/{game_session}', [SessionController::class, 'show'])->name('sessions.show');
+        Route::post('/sessions/{game_session}/controllers', [SessionController::class, 'updateControllers'])->name('sessions.updateControllers');
         Route::post('/sessions/{game_session}/add-item', [SessionController::class, 'addItem'])->name('sessions.addItem');
         Route::delete('/sessions/{game_session}/remove-item/{itemId}', [SessionController::class, 'removeItem'])->name('sessions.removeItem');
         Route::get('/sessions/{game_session}/checkout', [SessionController::class, 'checkout'])->name('sessions.checkout');

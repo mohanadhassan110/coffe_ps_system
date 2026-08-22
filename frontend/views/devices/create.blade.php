@@ -29,6 +29,11 @@
                             <label class="form-label text-slate-900 fw-bold">{{ __('messages.table.hourly_rate') }} ({{ __('messages.currency') }})</label>
                             <input type="number" name="hourly_rate" class="form-control" value="{{ old('hourly_rate') }}" step="0.50" min="0" required>
                         </div>
+                        <div class="mb-4">
+                            <label class="form-label text-slate-900 fw-bold">{{ __('messages.table.total_controllers') }}</label>
+                            <input type="number" name="total_controllers" class="form-control" value="{{ old('total_controllers', 4) }}" min="0" max="8" required>
+                            <small class="text-dark fw-bold">عدد أذرع التحكم المادية المتوفرة على هذا الجهاز.</small>
+                        </div>
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary btn-lg flex-grow-1 fw-bold shadow-sm"><i class="bi bi-check-lg me-1"></i>{{ __('messages.save') }}</button>
                             <a href="{{ route('devices.index') }}" class="btn btn-outline-secondary btn-lg">{{ __('messages.back') }}</a>

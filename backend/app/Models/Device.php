@@ -17,12 +17,14 @@ class Device extends Model
         'type',
         'hourly_rate',
         'status',
+        'total_controllers',
     ];
 
     protected function casts(): array
     {
         return [
             'hourly_rate' => 'decimal:2',
+            'total_controllers' => 'integer',
         ];
     }
 
@@ -76,6 +78,26 @@ class Device extends Model
     public function isAvailable(): bool
     {
         return $this->status === 'available';
+    }
+
+    /**
+     * عدد الأذرع المشغولة حالياً على هذا الجهاز (من الجلسة النشطة)
+     */
+    public function getOccupiedControllersAttribute(): int
+    {
+        if (!$this->relationLoaded('activeSession') || is_null($this->activeSession)) {
+            return 0;
+        }
+
+        return (int) $this->activeSession->active_controllers;
+    }
+
+    /**
+     * عدد الأذرع المتاحة (الخاملة) لحظياً على هذا الجهاز
+     */
+    public function getIdleControllersAttribute(): int
+    {
+        return max(0, $this->total_controllers - $this->occupied_controllers);
     }
 
     /**

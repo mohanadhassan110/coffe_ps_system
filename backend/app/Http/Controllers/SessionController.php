@@ -107,6 +107,28 @@ class SessionController extends Controller
     }
 
     /**
+     * تحديث عدد الأذرع النشطة في جلسة قائمة
+     */
+    public function updateControllers(Request $request, GameSession $gameSession)
+    {
+        $validated = $request->validate([
+            'active_controllers' => 'required|integer|min:1|max:8',
+        ]);
+
+        try {
+            $this->sessionService->updateActiveControllers(
+                $gameSession,
+                (int) $validated['active_controllers']
+            );
+            return redirect()->route('pos.index', ['selected' => 'session-'.$gameSession->id])
+                ->with('success', __('messages.success.controllers_updated'));
+        } catch (InvalidArgumentException $e) {
+            return redirect()->route('pos.index', ['selected' => 'session-'.$gameSession->id])
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
      * إزالة عنصر من الجلسة
      */
     public function removeItem(GameSession $gameSession, int $itemId)

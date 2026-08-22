@@ -17,7 +17,7 @@
                             <select name="device_id" class="form-select form-select-lg" id="deviceSelect">
                                 <option value="">{{ __('messages.cafe_only') }}</option>
                                 @foreach($devices as $device)
-                                    <option value="{{ $device->id }}" data-rate="{{ $device->hourly_rate }}" {{ old('device_id') == $device->id ? 'selected' : '' }}>
+                                    <option value="{{ $device->id }}" data-rate="{{ $device->hourly_rate }}" data-controllers="{{ $device->total_controllers }}" {{ old('device_id') == $device->id ? 'selected' : '' }}>
                                         {{ $device->name }} ({{ $device->type_name }} - {{ number_format($device->hourly_rate, 2) }} {{ __('messages.currency') }}/{{ __('messages.hour') }})
                                     </option>
                                 @endforeach
@@ -27,6 +27,16 @@
                         <div class="mb-3">
                             <label class="form-label text-slate-900 fw-bold">{{ __('messages.table.client') }} (اختياري)</label>
                             <input type="text" name="client_name" class="form-control" value="{{ old('client_name') }}" placeholder="اسم العميل">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-slate-900 fw-bold">عدد أذرع التحكم (اللاعبين)</label>
+                            <select name="active_controllers" id="controllersSelect" class="form-select form-select-lg fw-bold">
+                                @for($c = 1; $c <= 8; $c++)
+                                    <option value="{{ $c }}" {{ old('active_controllers', 2) == $c ? 'selected' : '' }}>{{ $c }}</option>
+                                @endfor
+                            </select>
+                            <small class="text-dark fw-bold">يُحدد تلقائياً حسب الأذرع المتاحة على الجهاز المختار.</small>
                         </div>
 
                         <div class="mb-3">
@@ -68,6 +78,38 @@
 
 @push('scripts')
 <script>
+// تحديث خيارات الأذرع حسب الجهاز المختار (لا يمكن تجاوز أذرعه المتاحة)
+const deviceSelect = document.getElementById('deviceSelect');
+const controllersSelect = document.getElementById('controllersSelect');
+
+function refreshControllerOptions() {
+    const option = deviceSelect.options[deviceSelect.selectedIndex];
+    const total = option && option.dataset.controllers ? parseInt(option.dataset.controllers) : 0;
+
+    controllersSelect.innerHTML = '';
+
+    if (!total) {
+        // طلب كافيه فقط — لا توجد أذرع
+        const opt = document.createElement('option');
+        opt.value = 0;
+        opt.textContent = 'بدون أذرع (طلب كافيه فقط)';
+        opt.selected = true;
+        controllersSelect.appendChild(opt);
+        return;
+    }
+
+    for (let c = 1; c <= total; c++) {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        if (c === Math.min(2, total)) opt.selected = true;
+        controllersSelect.appendChild(opt);
+    }
+}
+
+deviceSelect.addEventListener('change', refreshControllerOptions);
+refreshControllerOptions();
+
 document.querySelectorAll('input[name="session_type"]').forEach(radio => {
     radio.addEventListener('change', function() {
         document.getElementById('prePaidMinutesGroup').style.display =

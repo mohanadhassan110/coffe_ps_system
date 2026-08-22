@@ -23,6 +23,7 @@ class GameSession extends Model
         'client_name',
         'session_type',
         'pre_paid_minutes',
+        'active_controllers',
         'start_time',
         'end_time',
         'playstation_total',
@@ -45,6 +46,7 @@ class GameSession extends Model
             'discount' => 'decimal:2',
             'final_amount' => 'decimal:2',
             'pre_paid_minutes' => 'integer',
+            'active_controllers' => 'integer',
         ];
     }
 
@@ -173,6 +175,21 @@ class GameSession extends Model
             'pre_paid' => 'مدفوع مسبقاً',
             default => $this->session_type,
         };
+    }
+
+    /**
+     * نص حالة الأذرع للعرض (مثال: الأذرع النشطة: 2 / المتاحة: 2)
+     */
+    public function getControllersStatusAttribute(): string
+    {
+        if (is_null($this->device_id) || !$this->device) {
+            return '';
+        }
+
+        return __('messages.controllers.status_line', [
+            'active' => $this->active_controllers,
+            'available' => $this->device->idle_controllers,
+        ]);
     }
 
     /**

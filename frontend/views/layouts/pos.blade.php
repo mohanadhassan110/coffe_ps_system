@@ -320,6 +320,24 @@
             color: var(--pos-blue);
         }
 
+        /* حالة أذرع التحكم — نص أسود صريح على خلفية فاتحة عالية التباين */
+        .pos-device-card .device-controllers {
+            font-weight: 800;
+            font-size: 0.78rem;
+            color: #000000;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .pos-device-card .device-controllers strong {
+            color: #000000;
+        }
+
+
         .pos-device-card .device-cost {
             font-weight: 800;
             font-size: 0.88rem;
